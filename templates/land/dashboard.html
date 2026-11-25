@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+    <small class="text-muted">Last updated: <span id="last-updated">--</span></small>
+</div>
+
+{# Syllabus: {% for %} loop, template variables, stat cards #}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Total Parcels</div>
+                <div class="card-title" id="total-parcels">{{ total_parcels }}</div>
+                <i class="bi bi-geo-alt-fill text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Total Area (Acres)</div>
+                <div class="card-title" id="total-area">{{ total_area|floatformat:1 }}</div>
+                <i class="bi bi-map text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Active Cases</div>
+                <div class="card-title" id="active-cases">{{ active_cases }}</div>
+                <i class="bi bi-folder2-open text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Total Compensation (₹)</div>
+                <div class="card-title fs-5" id="total-comp">₹{{ total_comp|floatformat:0 }}</div>
+                <i class="bi bi-currency-rupee text-success"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {# Cases by Status table #}
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Cases by Status</strong></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Status</th><th>Count</th></tr></thead>
+                    <tbody>
+                        {# Syllabus: {% for %} with {% empty %} #}
+                        {% for row in cases_by_status %}
+                        <tr>
+                            <td>{% include 'land/_status_badge.html' with status=row.status %}</td>
+                            <td><strong>{{ row.count }}</strong></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-muted text-center">No cases yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {# Top States table #}
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Top 5 States by Acquired Area</strong></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>State</th><th>Acres</th></tr></thead>
+                    <tbody>
+                        {% for state in top_states %}
+                        <tr>
+                            <td>{{ state.name }}</td>
+                            <td>{{ state.acquired_area|floatformat:1 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-muted text-center">No data yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {# Live activity feed #}
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Latest Activity</strong></div>
+            <div class="card-body p-2">
+                {% for update in latest_updates %}
+                <div class="border-bottom pb-2 mb-2 small">
+                    <strong>{{ update.case.project_name|truncatechars:30 }}</strong><br>
+                    {% include 'land/_status_badge.html' with status=update.old_status %}
+                    <i class="bi bi-arrow-right"></i>
+                    {% include 'land/_status_badge.html' with status=update.new_status %}
+                    <br>
+                    <span class="text-muted">{{ update.timestamp|date:"d M, H:i" }} by {{ update.updated_by }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center">No activity yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Syllabus: Real-time AJAX polling using fetch() - updates stats every 10 seconds #}
+<script>
+async function refresh() {
+    try {
+        // Fetch JSON from the stats API endpoint
+        const res = await fetch("{% url 'land:stats_api' %}");
+        const data = await res.json();
+
+        // Update the DOM with fresh numbers (Syllabus: DOM manipulation)
+        document.getElementById('total-parcels').textContent = data.total_parcels;
+        document.getElementById('total-area').textContent = parseFloat(data.total_area).toFixed(1);
+        document.getElementById('active-cases').textContent = data.active_cases;
+        document.getElementById('total-comp').textContent = '₹' + Math.round(data.total_comp).toLocaleString('en-IN');
+
+        // Show last updated timestamp
+        const now = new Date();
+        document.getElementById('last-updated').textContent =
+            now.toTimeString().slice(0, 8);
+    } catch (e) {
+        console.error('Stats refresh failed:', e);
+    }
+}
+
+// Syllabus: setInterval for periodic polling (every 10 seconds)
+setInterval(refresh, 10000);
+refresh(); // Run immediately on page load
+</script>
+{% endblock %}

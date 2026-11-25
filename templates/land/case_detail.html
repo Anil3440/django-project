@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Case #{{ case.pk }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-folder2-open"></i> Case #{{ case.pk }} — {{ case.project_name }}</h2>
+    <div>
+        {% if user.is_superuser or user.groups.all.0.name == 'Officer' %}
+        <a href="{% url 'land:case_update_status' case.pk %}" class="btn btn-warning btn-sm">
+            <i class="bi bi-arrow-repeat"></i> Update Status
+        </a>
+        {% endif %}
+        <a href="{% url 'land:case_list' %}" class="btn btn-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white"><strong>Case Details</strong></div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><th>Parcel:</th><td><a href="{% url 'land:parcel_detail' case.parcel.pk %}">{{ case.parcel.parcel_id }}</a></td></tr>
+                    <tr><th>Project:</th><td>{{ case.project_name }}</td></tr>
+                    <tr><th>Purpose:</th><td>{{ case.purpose }}</td></tr>
+                    <tr><th>Status:</th><td>{% include 'land/_status_badge.html' with status=case.status %}</td></tr>
+                    <tr><th>Compensation:</th><td>{% if case.compensation_amount %}₹{{ case.compensation_amount|floatformat:0 }}{% else %}—{% endif %}</td></tr>
+                    <tr><th>Opened By:</th><td>{{ case.opened_by.username }}</td></tr>
+                    <tr><th>Created At:</th><td>{{ case.created_at|date:"d M Y, H:i" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white"><strong>Update Timeline</strong></div>
+            <div class="card-body p-2">
+                {% for update in updates %}
+                <div class="border-bottom pb-2 mb-2 small">
+                    {% include 'land/_status_badge.html' with status=update.old_status %}
+                    <i class="bi bi-arrow-right"></i>
+                    {% include 'land/_status_badge.html' with status=update.new_status %}
+                    <br>
+                    <span class="text-muted">{{ update.timestamp|date:"d M Y, H:i" }} by {{ update.updated_by }}</span>
+                    {% if update.remarks %}<br><em>{{ update.remarks }}</em>{% endif %}
+                </div>
+                {% empty %}
+                <p class="text-muted text-center">No updates yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

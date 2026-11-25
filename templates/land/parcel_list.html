@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Parcels{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-geo-alt-fill"></i> Land Parcels
+        {% if state_filter %}<small class="text-muted fs-5">— {{ state_filter.name }}</small>{% endif %}
+    </h2>
+    {# Syllabus: {% if %} checking user group #}
+    {% if user.is_superuser or user.groups.all.0.name == 'Officer' %}
+    <a href="{% url 'land:parcel_create' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Add Parcel
+    </a>
+    {% endif %}
+</div>
+
+{# Syllabus: GET form - search/filter (no CSRF needed for GET) #}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">{{ form.q.label_tag }} {{ form.q }}</div>
+            <div class="col-md-3">{{ form.state.label_tag }} {{ form.state }}</div>
+            <div class="col-md-3">{{ form.land_type.label_tag }} {{ form.land_type }}</div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+        {# Syllabus: Cookies - show saved filter and option to clear #}
+        {% if saved_state_code %}
+        <div class="mt-2">
+            <small class="text-muted">
+                <i class="bi bi-bookmark-fill"></i> Saved filter: <strong>{{ saved_state_code }}</strong>
+                <a href="{% url 'land:clear_cookie' %}" class="ms-2 text-danger">Clear saved filter</a>
+            </small>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{# Sidebar: Recently viewed parcels (from session) #}
+<div class="row">
+    <div class="col-md-9">
+        <table class="table table-hover table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Parcel ID</th><th>Title</th><th>State</th>
+                    <th>District</th><th>Area (Acres)</th><th>Type</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Syllabus: {% for %} with {% empty %} #}
+                {% for parcel in parcels %}
+                <tr>
+                    <td><a href="{% url 'land:parcel_detail' parcel.pk %}">{{ parcel.parcel_id }}</a></td>
+                    <td>{{ parcel.title|truncatechars:30 }}</td>
+                    <td>{{ parcel.state.code }}</td>
+                    <td>{{ parcel.district }}</td>
+                    {# Syllabus: floatformat filter #}
+                    <td>{{ parcel.area_acres|floatformat:2 }}</td>
+                    <td>{{ parcel.land_type }}</td>
+                    <td>
+                        <a href="{% url 'land:parcel_detail' parcel.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if user.is_superuser or user.groups.all.0.name == 'Officer' %}
+                        <a href="{% url 'land:parcel_edit' parcel.pk %}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                        <a href="{% url 'land:parcel_delete' parcel.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted">No parcels found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-3">
+        {# Syllabus: Sessions - recently viewed shown in sidebar #}
+        <div class="card shadow-sm recently-viewed">
+            <div class="card-header bg-success text-white small">
+                <i class="bi bi-clock-history"></i> Recently Viewed
+            </div>
+            <div class="card-body p-2">
+                {% if request.session.recent_parcels %}
+                <ul class="list-unstyled mb-0 small">
+                    {% for pid in request.session.recent_parcels %}
+                    <li><a href="{% url 'land:parcel_detail' pid %}">Parcel #{{ pid }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted small mb-0">None yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

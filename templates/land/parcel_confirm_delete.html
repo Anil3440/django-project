@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Delete Parcel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5><i class="bi bi-trash"></i> Confirm Delete</h5>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to delete parcel <strong>{{ parcel.parcel_id }}</strong>?</p>
+                <p class="text-muted">Title: {{ parcel.title }}<br>Owner: {{ parcel.owner_name }}</p>
+                <div class="alert alert-warning">This action cannot be undone.</div>
+                {# POST form with CSRF token - required for destructive actions #}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Yes, Delete
+                    </button>
+                    <a href="{% url 'land:parcel_detail' parcel.pk %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

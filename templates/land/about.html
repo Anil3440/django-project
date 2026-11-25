@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h4><i class="bi bi-info-circle"></i> About BhoomiTrack</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">BhoomiTrack is a Real-Time National Land Acquisition &amp; Management System built with Django.</p>
+                <hr>
+                <h5>Request/Response Cycle (Syllabus: HTTP Requests and Responses)</h5>
+                <table class="table table-bordered">
+                    <tr><th>Request Method:</th><td><code>{{ request_method }}</code></td></tr>
+                    <tr><th>Request Path:</th><td><code>{{ request_path }}</code></td></tr>
+                    <tr><th>Response Type:</th><td><code>HttpResponse (rendered HTML)</code></td></tr>
+                </table>
+                <p class="text-muted small">This page shows the request method and path as template variables,
+                demonstrating how Django views receive HttpRequest objects and return HttpResponse objects.</p>
+
+                <hr>
+                <h5>Tech Stack</h5>
+                <ul>
+                    <li>Python 3 + Django 5.x</li>
+                    <li>SQLite database</li>
+                    <li>Bootstrap 5 (CDN)</li>
+                    <li>Vanilla JavaScript (AJAX polling)</li>
+                </ul>
+
+                <hr>
+                <h5>CSRF Protection (Syllabus)</h5>
+                <p>Every POST form in this app includes <code>{% templatetag openblock %} csrf_token {% templatetag closeblock %}</code>.
+                Django's <code>CsrfViewMiddleware</code> validates this token on every POST request.
+                Without it, the server returns <strong>403 Forbidden</strong>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

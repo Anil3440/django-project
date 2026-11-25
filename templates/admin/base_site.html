@@ -1,0 +1,139 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}BhoomiTrack National Administration{% endblock %}
+
+{% block branding %}
+<div style="display: flex; align-items: center; gap: 10px;">
+    <span style="font-size: 24px;">🌾</span>
+    <h1 id="site-name" style="margin: 0; font-weight: 800; letter-spacing: -0.5px;">
+        <a href="{% url 'admin:index' %}" style="color: #ffffff; text-decoration: none;">
+            Bhoomi<span style="color: #34d399;">Track</span> Admin
+        </a>
+    </h1>
+    <span style="background: rgba(52, 211, 153, 0.2); color: #a7f3d0; font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 700; border: 1px solid rgba(52, 211, 153, 0.3);">
+        NATIONAL PORTAL
+    </span>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #047857;
+        --secondary: #065f46;
+        --accent: #10b981;
+        --primary-fg: #ffffff;
+        --body-bg: #f8fafc;
+        --body-fg: #1e293b;
+        --border-color: #e2e8f0;
+    }
+    body {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        background: #f8fafc !important;
+        color: #1e293b !important;
+    }
+    #header {
+        background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%) !important;
+        color: #ffffff !important;
+        padding: 14px 40px !important;
+        box-shadow: 0 4px 12px rgba(6, 78, 59, 0.15) !important;
+    }
+    #user-tools {
+        font-size: 13px !important;
+        font-weight: 600 !important;
+    }
+    #user-tools a {
+        border-bottom: none !important;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-left: 6px;
+        transition: all 0.2s;
+        color: #ffffff !important;
+    }
+    #user-tools a:hover {
+        background: rgba(255, 255, 255, 0.3) !important;
+    }
+    div.breadcrumbs {
+        background: #ffffff !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 10px 40px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+    }
+    div.breadcrumbs a {
+        color: #047857 !important;
+    }
+    .module h2, .module caption, .inline-group h2 {
+        background: #065f46 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        border-radius: 8px 8px 0 0 !important;
+        padding: 10px 14px !important;
+    }
+    .module {
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        background: #ffffff !important;
+        margin-bottom: 24px !important;
+    }
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: #059669 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 16px !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+        box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2) !important;
+    }
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background: #047857 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3) !important;
+    }
+    .button.default, input[type=submit].default, .submit-row input.default {
+        background: #047857 !important;
+    }
+    .button.deletelink, a.deletelink {
+        background: #e11d48 !important;
+    }
+    #changelist table {
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    #changelist table thead th {
+        background: #f1f5f9 !important;
+        color: #475569 !important;
+        font-weight: 800 !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+    }
+    #changelist table tbody tr:hover {
+        background: #f8fafc !important;
+    }
+    .object-tools a.addlink {
+        background: #059669 !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+    }
+    #content {
+        padding: 24px 40px !important;
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Update Status - Case #{{ case.pk }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5><i class="bi bi-arrow-repeat"></i> Update Status — Case #{{ case.pk }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-secondary py-2 mb-3">
+                    <strong>Project:</strong> {{ case.project_name }} |
+                    <strong>Current Status:</strong> {% include 'land/_status_badge.html' with status=case.status %}
+                </div>
+
+                {# Syllabus: POST form with CSRF token and field validation #}
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for err in form.non_field_errors %}
+                        <p class="mb-0">{{ err }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.new_status.id_for_label }}" class="form-label fw-bold">Next Status *</label>
+                        {{ form.new_status }}
+                        {% if form.new_status.errors %}
+                        <div class="text-danger small mt-1">{{ form.new_status.errors }}</div>
+                        {% endif %}
+                        <div class="form-text text-muted">
+                            Workflow: PROPOSED &rarr; UNDER_REVIEW &rarr; APPROVED &rarr; COMPENSATION_PAID &rarr; COMPLETED (or REJECTED from PROPOSED/UNDER_REVIEW)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.compensation_amount.id_for_label }}" class="form-label fw-bold">Compensation Amount (₹)</label>
+                        {{ form.compensation_amount }}
+                        {% if form.compensation_amount.errors %}
+                        <div class="text-danger small mt-1">{{ form.compensation_amount.errors }}</div>
+                        {% endif %}
+                        <div class="form-text text-muted">Required when approving the case.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.remarks.id_for_label }}" class="form-label fw-bold">Remarks / Reason *</label>
+                        {{ form.remarks }}
+                        {% if form.remarks.errors %}
+                        <div class="text-danger small mt-1">{{ form.remarks.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-arrow-repeat"></i> Update Status
+                        </button>
+                        <a href="{% url 'land:case_detail' case.pk %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

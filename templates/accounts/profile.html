@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row g-4 my-2">
+    <!-- User Profile Card -->
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white py-3 d-flex align-items-center justify-content-between">
+                <span class="fw-bold"><i class="bi bi-person-badge-fill me-1"></i> Officer Identity</span>
+                {% if user.is_superuser %}
+                <span class="badge bg-danger">Superuser</span>
+                {% elif user.groups.all %}
+                {% for group in user.groups.all %}
+                <span class="badge bg-success">{{ group.name }}</span>
+                {% endfor %}
+                {% else %}
+                <span class="badge bg-secondary">Citizen</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center fw-bold fs-3 mb-2" style="width: 72px; height: 72px;">
+                        {{ user.username|slice:":2"|upper }}
+                    </div>
+                    <h5 class="fw-bold text-dark mb-0">{{ user.username }}</h5>
+                    <small class="text-muted">{{ user.email|default:"No email recorded" }}</small>
+                </div>
+
+                <table class="table table-sm table-borderless mb-0">
+                    <tr><th class="text-secondary small">User ID:</th><td class="fw-bold text-dark">#{{ user.id }}</td></tr>
+                    <tr><th class="text-secondary small">Member Since:</th><td class="fw-semibold text-dark">{{ user.date_joined|date:"d M Y" }}</td></tr>
+                    <tr><th class="text-secondary small">Last Login:</th><td class="fw-semibold text-dark">{{ user.last_login|date:"d M Y, H:i"|default:"Active session" }}</td></tr>
+                    <tr><th class="text-secondary small">Admin Portal:</th><td>
+                        {% if user.is_superuser %}
+                        <a href="/admin/" target="_blank" class="badge bg-dark text-decoration-none">Open Admin &rarr;</a>
+                        {% else %}
+                        <span class="text-muted small">Standard Permissions</span>
+                        {% endif %}
+                    </td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session & Recently Viewed Card -->
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-success text-white py-3">
+                <span class="fw-bold"><i class="bi bi-cpu-fill me-1"></i> Session Metrics (Syllabus: Sessions)</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 mb-3">
+                    <div>
+                        <span class="text-secondary small d-block">Dashboard Visit Counter</span>
+                        <span class="fs-4 fw-extrabold text-success">{{ visit_count }} visits</span>
+                    </div>
+                    <i class="bi bi-graph-up-arrow fs-2 text-success opacity-50"></i>
+                </div>
+                <small class="text-muted">
+                    Tracked via Django's server-side session backend (<code>SESSION_COOKIE_AGE = 1 day</code>).
+                </small>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <span class="fw-bold"><i class="bi bi-clock-history me-1"></i> Recently Viewed Land Parcels</span>
+            </div>
+            <div class="card-body p-4">
+                {% if recent_parcels %}
+                <div class="list-group list-group-flush">
+                    {% for parcel in recent_parcels %}
+                    <a href="{% url 'land:parcel_detail' parcel.pk %}" class="list-group-item list-group-item-action d-flex align-items-center justify-content-between px-0 py-2.5">
+                        <div>
+                            <span class="fw-bold text-dark font-monospace me-2">{{ parcel.parcel_id }}</span>
+                            <span class="text-secondary small">{{ parcel.title }}</span>
+                        </div>
+                        <span class="badge bg-light text-dark border">{{ parcel.district }}, {{ parcel.state.code }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted small mb-0 text-center py-3">
+                    No parcels viewed during this session yet. Browse the <a href="{% url 'land:parcel_list' %}" class="text-success fw-bold">parcel catalog</a>.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

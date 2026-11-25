@@ -1,0 +1,10 @@
+{# Reusable status badge include. Usage: {% include 'land/_status_badge.html' with status=case.status %} #}
+{% load land_extras %}
+{% if status == 'PROPOSED' %}<span class="badge bg-secondary">Proposed</span>
+{% elif status == 'UNDER_REVIEW' %}<span class="badge bg-primary">Under Review</span>
+{% elif status == 'APPROVED' %}<span class="badge bg-success">Approved</span>
+{% elif status == 'COMPENSATION_PAID' %}<span class="badge bg-info text-dark">Compensation Paid</span>
+{% elif status == 'COMPLETED' %}<span class="badge bg-success">Completed</span>
+{% elif status == 'REJECTED' %}<span class="badge bg-danger">Rejected</span>
+{% else %}<span class="badge bg-secondary">{{ status }}</span>
+{% endif %}
